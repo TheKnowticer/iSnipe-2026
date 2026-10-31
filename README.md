@@ -7,13 +7,13 @@ A custom iSnipe-inspired server setup for the original Call of Duty: Modern Warf
 ## Requirements
 
 - A legitimate MW2 (2009) multiplayer installation and the IW4x launcher/rawfiles, set up as described in the [IW4x server-hosting guide](https://docs.iw4x.io/hosting/server-hosting/).
-- Windows x86-compatible IW4x r4930 environment. `install/iw4x.dll` is a custom build based on upstream r4930 commit `67cd11ad5dc5a93b32a1903665706a847fcde33c`. Keep a backup of your existing DLL. An IW4x update can replace it.
+- Windows x86-compatible IW4x r5292 environment with current IW4x rawfiles (v0.2.40). `install/iw4x.dll` is a custom build based on upstream r5292 commit `5aa3b338534a32d4575651e5a1f13b8d94db2182`. Keep a backup of your existing DLL. An IW4x update can replace it.
 - Python 3.10+ for the control panel and its credential setup. The game servers do not require the panel to be running.
 - For Internet play, forward each server's UDP game port and TCP mod-download port to the host. The game installation, commercial game assets, and IW4x launcher are not provided here.
 
 ## Why a custom IW4x DLL is included
 
-The iSnipe GSC scripts call native functions added to the supplied `iw4x.dll` and depend on a few server-engine changes that stock IW4x r4930 does not provide. Without this DLL, scripts that call the added functions can fail, and features such as unlimited sprint, the custom killfeed, announcements, and panel player controls will not work as intended. This is a **dedicated-server build** based on the revision listed above; players still need a compatible IW4x client and download the mod assets normally. The DLL does not enable `sv_cheats` globally.
+The iSnipe GSC scripts call native functions added to the supplied `iw4x.dll` and depend on a few server-engine changes that stock IW4x r5292 does not provide. Without this DLL, scripts that call the added functions can fail, and features such as unlimited sprint, the custom killfeed, announcements, and panel player controls will not work as intended. This is a **dedicated-server build** based on the revision listed above; players still need a compatible IW4x client and download the mod assets normally. The DLL does not enable `sv_cheats` globally.
 
 The custom build provides:
 
@@ -23,11 +23,11 @@ The custom build provides:
 - **Control-panel integration:** `isnipePanelPlayers`, `isnipePanelKick`, `isnipePanelBan`, and `isnipePanelSay` are dedicated-server RCON commands. Moderation commands validate the player's slot, GUID, and current connection identity before acting, reducing the risk of targeting a replacement player after a slot is reused.
 - **Diagnostics and legacy radar support:** `ISnipeLogWeaponAccuracy` logs selected weapon spread and sway values. `ISnipeSetCompassPing` is a legacy firing-event ping used by the fallback radar path; it can produce firing effects. The normal configured anti-camp radar overlay is implemented by the mod scripts and assets, rather than this legacy function.
 
-Map voting, the leaderboard, loadouts, anti-camp position checks, and most match rules are implemented in the bundled GSC scripts, configurations, and assets; they are not all DLL features. The exact changes are available in [`source/iw4x-r4930-isnipe.patch`](source/iw4x-r4930-isnipe.patch), with build instructions and limits in [`docs/BUILD.md`](docs/BUILD.md). Replacing the DLL with a stock or different-revision build requires compatibility work and testing.
+Map voting, the leaderboard, loadouts, anti-camp position checks, and most match rules are implemented in the bundled GSC scripts, configurations, and assets; they are not all DLL features. The exact changes are available in [`source/iw4x-r5292-isnipe.patch`](source/iw4x-r5292-isnipe.patch), with build instructions and limits in [`docs/BUILD.md`](docs/BUILD.md). Replacing the DLL with a stock or different-revision build requires compatibility work and testing.
 
 ## Install
 
-1. Back up your existing `iw4x.dll`, settings and mod folders. Stop the game servers. Copy the **contents** of `install/` into your IW4x game root, the folder containing `iw4x.exe`. This installs the custom DLL, three mod folders, example configurations, panel and launchers.
+1. Back up your existing `iw4x.dll`, settings, mod folders and IW4x rawfiles. Update the IW4x launcher and rawfiles to the r5292-compatible release before installing the custom DLL. IW4x may migrate its rawfiles and fastfiles to a new folder layout on first startup. Stop the game servers. Copy the **contents** of `install/` into your IW4x game root, the folder containing `iw4x.exe`. This installs the custom DLL, three mod folders, example configurations, panel and launchers.
 2. Run `python Initialize-iSnipe-Control.py` from the game root. It generates a unique admin password and RCON secret; it refuses to overwrite existing panel credentials. The game configurations load the generated `userraw/isnipe-panel-rcon.cfg`. Even if you do not use the panel, this creates the referenced config.
 3. Review `userraw/isnipe-dev.cfg`, `isnipe-tdm.cfg`, `isnipe-ffa.cfg`, `isnipe-public.cfg`, and `isnipe-announcements.cfg`. Change names and options to suit your server. The default map-vote pool includes optional maps: install and verify maps before offering them to players. Test bots are disabled.
 4. Start the modes using `Start-iSnipe-SD-Public.bat`, `Start-iSnipe-TDM-Public.bat`, and `Start-iSnipe-FFA-Public.bat`, or use the control panel. Defaults: S&D UDP/TCP 28960 (first to 5 rounds, 10-minute rounds), TDM 28961 (15 minutes, 75 kills), and FFA 28962 (15 minutes, 50 kills). UAV and Counter-UAV are configured at 3 and 4 kills; TDM and FFA also offer a nuke at 25.
@@ -42,7 +42,7 @@ The panel uses unencrypted HTTP and is intended for a trusted LAN. Do not forwar
 ## Source and rebuilding
 
 - `install/mods/`: current server GSC, voting scripts, compiled mod fastfiles and UI packages. Each game mode has its own folder and leaderboard data at runtime.
-- `source/iw4x-r4930-isnipe.patch`: changes to the IW4x r4930 client/dedicated source, including sprint/perk handling, killfeed support, announcements, panel commands and a legacy radar ping. `docs/BUILD.md` has build steps.
+- `source/iw4x-r5292-isnipe.patch`: changes to the IW4x r5292 client/dedicated source, including sprint/perk handling, killfeed support, announcements, panel commands and a legacy radar ping. `docs/BUILD.md` has build steps.
 - `source/asset-build/`: weapon/preview definitions and zone manifest used for the current fastfile; `source/menus/` contains menu source. Building fastfiles requires the applicable IW4x tools and game assets. See `docs/BUILD.md` for limitations.
 - `source/mapvote/`: source and resources from the imported map-vote package.
 
