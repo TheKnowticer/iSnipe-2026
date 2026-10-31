@@ -1,6 +1,6 @@
 # iSnipe 2026 for IW4x
 
-![iSnipe 2026: IW4x sniper servers for S&D, TDM and FFA](docs/images/isnipe-showcase.png)
+![iSnipe 2026: quickscoping, map voting, leaderboards and anti-camp radar](docs/images/isnipe-showcase.png)
 
 A custom iSnipe-inspired server setup for the original Call of Duty: Modern Warfare 2 (2009) and IW4x. Includes S&D, Team Deathmatch and Free-for-All variants, two sniper classes (Intervention and M40A3), map voting, a persistent per-server leaderboard (`!lb`, `!leaderboard`, `!top10`), anti-camp radar, killfeed, configurable announcements, and an optional LAN administration panel.
 
