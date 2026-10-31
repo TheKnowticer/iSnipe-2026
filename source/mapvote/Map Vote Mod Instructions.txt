@@ -1,0 +1,27 @@
+All instructions on this video as well: https://youtu.be/jhn5dEzpGQg
+
+Instructions for setting up the modified Map Vote Mod
+
+1. Copy all the files contained in the "IW4x Post Map Vote Modified.zip" into the root of your Call of Duty Modern Warfare 2 game folder (download: https://drive.google.com/file/d/1rh1WDSK5-SIm6fyZ1-NDtQyKDTYFVK5m/view?usp=sharing).
+
+2a. Download Python if you don't already have it. (https://www.python.org/downloads/)
+2b. Start the installation of Python and make sure to select the option to "Add Python to environment variables". (Run the installer again if you don't see it, click Modify, then Next, and under Advanced Options you should see it)
+
+
+
+Instructions for updating the mod with new/modified custom maps.
+
+1. Put any custom maps you want into your usermaps folder if you don't already have it there.
+
+2a. Open a Command Prompt/Powershell window in your MW2 game root folder. (You can Shift+Right Click on any empty space in the folder and you should see an option to open either Powershell, Command Prompt or both.)
+2b. In the command window, type "python update_vote_menu.py"
+2c. Once no errors show up, close the command window.
+
+3a. Open zonebuilder.exe (found in your game root once you have IW4x installed)
+3b. Once it finishes loading, type "buildmod f8"
+3c. Once it finishes building, close zonebuilder.
+
+4. Go to mods/f8 folder, copy the file "mod.ff" and paste it into mods/mapvote (replace the existing mod.ff file)
+
+
+And that's it!

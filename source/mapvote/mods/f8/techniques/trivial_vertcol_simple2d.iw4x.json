@@ -1,0 +1,41 @@
+{
+    "version": 1,
+    "name": "trivial_vertcol_simple2d",
+    "flags": "0000000000000000",
+    "passArray": [
+        {
+            "vertexDeclaration": "ppcc0t0t0",
+            "vertexShader": "trivial_vertcol_simple.hlsl",
+            "pixelShader": "trivial_vertcol_simple.hlsl",
+            "perPrimArgCount": 1,
+            "perObjArgCount": 1,
+            "stableArgCount": 1,
+            "customSamplerFlags": 0,
+            "arguments": [
+                {
+                    "type": 3,
+                    "dest": 4,
+                    "codeConst": {
+                        "index": 98,
+                        "firstRow": 0,
+                        "rowCount": 4
+                    }
+                },
+                {
+                    "type": 3,
+                    "dest": 0,
+                    "codeConst": {
+                        "index": 86,
+                        "firstRow": 0,
+                        "rowCount": 4
+                    }
+                },
+                {
+                    "type": 2,
+                    "dest": 0,
+                    "nameHash": 2695565377
+                }
+            ]
+        }
+    ]
+}

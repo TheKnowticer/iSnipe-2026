@@ -1,0 +1,1102 @@
+{
+	menuDef
+	{
+		name "changeclass"
+		rect 0 0 640 480 0 0
+		forecolor 1 1 1 1
+		focuscolor 1 1 1 1
+		blurWorld 7
+		onOpen
+		{
+			focusfirst;
+		}
+		onEsc
+		{
+			scriptmenuresponse "back";
+		}
+		execKey "f"
+		{
+			play "mouse_click";
+			open "popup_friends";
+		}
+		itemDef
+		{
+			rect 0 0 640 480 4 4
+			decoration
+			visible 1
+			style 3
+			forecolor 0 0 0 0.4
+			background "white"
+			textscale 0.55
+		}
+		itemDef
+		{
+			rect 0 0 640 480 4 4
+			style 3
+			decoration
+			visible 1
+			forecolor 1 1 1 0
+			background "mockup_bg_glow"
+			textscale 0.55
+			exp forecolor a ( ( ( sin( milliseconds( ) / 1500 ) + 1 ) * 0.25 ) + 0.25 )
+		}
+		itemDef
+		{
+			rect 0 0 640 480 4 4
+			style 3
+			decoration
+			visible 1
+			forecolor 1 1 1 0
+			background "mockup_bg_glow"
+			textscale 0.55
+			exp forecolor a ( ( ( sin( milliseconds( ) / 480 ) + 1 ) * 0.25 ) + 0.25 )
+		}
+		itemDef
+		{
+			rect -64 0 280 480 1 0
+			style 3
+			decoration
+			visible 1
+			forecolor 0 0 0 0.25
+			background "gradient_fadein_fadebottom"
+			textscale 0.55
+		}
+		itemDef
+		{
+			rect 0 0 272 28 1 1
+			decoration
+			visible 1
+			forecolor 1 1 1 1
+			textfont 9
+			textalign 6
+			textalignx -60
+			textscale 0.5
+			text "@MPUI_CHOOSE_CLASS_CAP"
+		}
+		itemDef
+		{
+			rect 10 58 128 128 1 1
+			style 3
+			decoration
+			visible 1
+			forecolor 1 1 1 0.275
+			textscale 0.55
+			visible when ( localvarstring( "ui_team" ) == "marines" )
+			exp material ( dvarstring( "g_TeamIcon_Allies" ) )
+		}
+		itemDef
+		{
+			rect 10 58 128 128 1 1
+			style 3
+			decoration
+			visible 1
+			forecolor 1 1 1 0.275
+			textscale 0.55
+			visible when ( localvarstring( "ui_team" ) == "opfor" )
+			exp material ( dvarstring( "g_TeamIcon_Axis" ) )
+		}
+		itemDef
+		{
+			rect 10 58 128 128 1 1
+			style 3
+			decoration
+			visible 1
+			forecolor 1 1 1 0.275
+			textscale 0.55
+			visible when ( team( "name" ) == "TEAM_FREE" && localvarstring( "ui_team" ) == "marines" )
+			exp material ( dvarstring( "g_TeamIcon_Allies" ) )
+		}
+		itemDef
+		{
+			rect 10 58 128 128 1 1
+			style 3
+			decoration
+			visible 1
+			forecolor 1 1 1 0.275
+			textscale 0.55
+			visible when ( team( "name" ) == "TEAM_FREE" && localvarstring( "ui_team" ) == "opfor" )
+			exp material ( dvarstring( "g_TeamIcon_Axis" ) )
+		}
+		itemDef
+		{
+			rect 10 196 128 128 1 1
+			decoration
+			visible 1
+			forecolor 1 1 1 0.2
+			textfont 6
+			textscale 0.4583
+			textstyle 6
+			textalign 1
+			textaligny 10
+			visible when ( team( "name" ) == "TEAM_ALLIES" )
+			exp text ( "@" + dvarstring( "g_TeamName_Allies" ) )
+		}
+		itemDef
+		{
+			rect 10 196 128 128 1 1
+			decoration
+			visible 1
+			forecolor 1 1 1 0.2
+			textfont 6
+			textscale 0.4583
+			textstyle 6
+			textalign 1
+			textaligny 10
+			visible when ( team( "name" ) == "TEAM_FREE" && localvarstring( "ui_team" ) == "marines" )
+			exp text ( "@" + dvarstring( "g_TeamName_Allies" ) )
+		}
+		itemDef
+		{
+			rect 10 196 128 128 1 1
+			decoration
+			visible 1
+			forecolor 1 1 1 0.2
+			textfont 6
+			textscale 0.4583
+			textstyle 6
+			textalign 1
+			textaligny 10
+			visible when ( team( "name" ) == "TEAM_AXIS" )
+			exp text ( "@" + dvarstring( "g_TeamName_Axis" ) )
+		}
+		itemDef
+		{
+			rect 10 196 128 128 1 1
+			decoration
+			visible 1
+			forecolor 1 1 1 0.2
+			textfont 6
+			textscale 0.4583
+			textstyle 6
+			textalign 1
+			textaligny 10
+			visible when ( team( "name" ) == "TEAM_FREE" && localvarstring( "ui_team" ) == "opfor" )
+			exp text ( "@" + dvarstring( "g_TeamName_Axis" ) )
+		}
+		itemDef
+		{
+			name "class_choose_1"
+			rect -64 28 336 20 1 1
+			group "mw2_button"
+			style 1
+			visible 1
+			forecolor 1 1 1 1
+			disablecolor 0.6 0.55 0.55 1
+			background "menu_button_selection_bar"
+			type 1
+			textfont 3
+			textalign 6
+			textalignx -60
+			textscale 0.375
+			text "Intervention"
+			action
+			{
+				play "mouse_click";
+				scriptmenuresponse "class0";
+				close self;
+			}
+			onFocus
+			{
+				play "mouse_over";
+				if ( dvarstring( "gameMode" ) != "mp" )
+				{
+					setItemColor "mw2_button" backcolor 0 0 0 0;
+				}
+				setItemColor self backcolor 0 0 0 1;
+				setLocalVarBool "ui_menuAButton" ( 1 );
+				setLocalVarFloat "ui_popupYPos" ( getfocuseditemy( ) );
+				setLocalVarString "loadoutPrimary" ( "cheytac" );
+				setLocalVarString "loadoutPrimaryAttachment" ( "fmj" );
+				setLocalVarString "loadoutPrimaryAttachment2" ( "xmags" );
+				if ( localvarstring( "loadoutPrimaryAttachment2" ) == "" )
+				{
+					setLocalVarString "loadoutPrimaryAttachment2" ( "none" );
+				}
+				setLocalVarString "loadoutPrimaryCamo" ( "none" );
+				setLocalVarString "loadoutSecondary" ( "deserteagle" );
+				setLocalVarString "loadoutSecondaryAttachment" ( "tactical" );
+				setLocalVarString "loadoutSecondaryAttachment2" ( "none" );
+				if ( localvarstring( "loadoutSecondaryAttachment2" ) == "" )
+				{
+					setLocalVarString "loadoutSecondaryAttachment2" ( "none" );
+				}
+				setLocalVarString "loadoutSecondaryCamo" ( "none" );
+				setLocalVarString "loadoutEquipment" ( "throwingknife_mp" );
+				setLocalVarString "loadoutPerk1" ( "specialty_fastreload" );
+				setLocalVarString "loadoutPerk2" ( "specialty_bulletdamage" );
+				setLocalVarString "loadoutPerk3" ( "specialty_bulletaccuracy" );
+				setLocalVarString "loadoutStreak1" ( "none" );
+				setLocalVarString "loadoutStreak2" ( "none" );
+				setLocalVarString "loadoutStreak3" ( "none" );
+				setLocalVarString "loadoutDeathStreak" ( "specialty_null" );
+				setLocalVarString "loadoutOffhandSecondary" ( "none" );
+				setLocalVarString "loadoutClassName" ( "Intervention" );
+			}
+			leaveFocus
+			{
+				setItemColor self backcolor 0 0 0 "0.0";
+				setLocalVarString "ui_hint_text" ( "@NULL_EMPTY" );
+				setLocalVarBool "ui_menuAButton" ( 0 );
+			}
+		}
+
+		itemDef
+		{
+			name "class_choose_2"
+			rect -64 48 336 20 1 1
+			group "mw2_button"
+			style 1
+			visible 1
+			forecolor 1 1 1 1
+			disablecolor 0.6 0.55 0.55 1
+			background "menu_button_selection_bar"
+			type 1
+			textfont 3
+			textalign 6
+			textalignx -60
+			textscale 0.375
+			text "M40A3"
+			action
+			{
+				play "mouse_click";
+				scriptmenuresponse "class1";
+				close self;
+			}
+			onFocus
+			{
+				play "mouse_over";
+				if ( dvarstring( "gameMode" ) != "mp" )
+				{
+					setItemColor "mw2_button" backcolor 0 0 0 0;
+				}
+				setItemColor self backcolor 0 0 0 1;
+				setLocalVarBool "ui_menuAButton" ( 1 );
+				setLocalVarFloat "ui_popupYPos" ( getfocuseditemy( ) );
+				setLocalVarString "loadoutPrimary" ( "m40a3" );
+				setLocalVarString "loadoutPrimaryAttachment" ( "fmj" );
+				setLocalVarString "loadoutPrimaryAttachment2" ( "xmags" );
+				if ( localvarstring( "loadoutPrimaryAttachment2" ) == "" )
+				{
+					setLocalVarString "loadoutPrimaryAttachment2" ( "none" );
+				}
+				setLocalVarString "loadoutPrimaryCamo" ( "none" );
+				setLocalVarString "loadoutSecondary" ( "deserteagle" );
+				setLocalVarString "loadoutSecondaryAttachment" ( "tactical" );
+				setLocalVarString "loadoutSecondaryAttachment2" ( "none" );
+				if ( localvarstring( "loadoutSecondaryAttachment2" ) == "" )
+				{
+					setLocalVarString "loadoutSecondaryAttachment2" ( "none" );
+				}
+				setLocalVarString "loadoutSecondaryCamo" ( "none" );
+				setLocalVarString "loadoutEquipment" ( "throwingknife_mp" );
+				setLocalVarString "loadoutPerk1" ( "specialty_fastreload" );
+				setLocalVarString "loadoutPerk2" ( "specialty_bulletdamage" );
+				setLocalVarString "loadoutPerk3" ( "specialty_bulletaccuracy" );
+				setLocalVarString "loadoutStreak1" ( "none" );
+				setLocalVarString "loadoutStreak2" ( "none" );
+				setLocalVarString "loadoutStreak3" ( "none" );
+				setLocalVarString "loadoutDeathStreak" ( "specialty_null" );
+				setLocalVarString "loadoutOffhandSecondary" ( "none" );
+				setLocalVarString "loadoutClassName" ( "M40A3" );
+			}
+			leaveFocus
+			{
+				setItemColor self backcolor 0 0 0 "0.0";
+				setLocalVarString "ui_hint_text" ( "@NULL_EMPTY" );
+				setLocalVarBool "ui_menuAButton" ( 0 );
+			}
+		}
+
+
+
+
+		itemDef
+		{
+			rect 0 128 216 1 1 1
+			style 3
+			decoration
+			visible 1
+			forecolor 1 1 1 0.65
+			background "gradient_fadein"
+			textscale 0.55
+		}
+		
+#define CLASS_BUTTON(index,classname) \
+		itemDef \
+		{ \
+			name "class_custom" \
+			rect -64 (128 + (20 * index)) 336 20 1 1 \
+			visible 1 \
+			group "mw2_button" \
+			style 1 \
+			forecolor 1 1 1 1 \
+			disablecolor 0.6 0.55 0.55 1 \
+			background "menu_button_selection_bar" \
+			type 1 \
+			textfont 3 \
+			textalign 6 \
+			textalignx -60 \
+			textscale 0.375 \
+			visible when ( getplayerdata( "customClasses" , index , "inUse" ) ) \
+			exp text ( getplayerdata( "customClasses" , index , "name" ) ) \
+			action \
+			{ \
+				play "mouse_click"; \
+				scriptmenuresponse classname; \
+				close self; \
+			} \
+			onFocus \
+			{ \
+				play "mouse_over"; \
+				if ( dvarstring( "gameMode" ) != "mp" ) \
+				{ \
+					setItemColor "mw2_button" backcolor 0 0 0 0; \
+				} \
+				setItemColor self backcolor 0 0 0 1; \
+				setLocalVarBool "ui_menuAButton" ( 1 ); \
+				setLocalVarFloat "ui_popupYPos" ( getfocuseditemy( ) ); \
+				setLocalVarInt "classIndex" ( index ); \
+				setLocalVarString "loadoutPrimary" ( getplayerdata( "customClasses" , localvarint( "classIndex" ) , "weaponSetups" , 0 , "weapon" ) ); \
+				setLocalVarString "loadoutPrimaryAttachment" ( getplayerdata( "customClasses" , localvarint( "classIndex" ) , "weaponSetups" , 0 , "attachment" , 0 ) ); \
+				setLocalVarString "loadoutPrimaryAttachment2" ( getplayerdata( "customClasses" , localvarint( "classIndex" ) , "weaponSetups" , 0 , "attachment" , 1 ) ); \
+				if ( localvarstring( "loadoutPrimaryAttachment2" ) == "" ) \
+				{ \
+					setLocalVarString "loadoutPrimaryAttachment2" ( "none" ); \
+				} \
+				setLocalVarString "loadoutPrimaryCamo" ( getplayerdata( "customClasses" , localvarint( "classIndex" ) , "weaponSetups" , 0 , "camo" ) ); \
+				setLocalVarString "loadoutSecondary" ( getplayerdata( "customClasses" , localvarint( "classIndex" ) , "weaponSetups" , 1 , "weapon" ) ); \
+				setLocalVarString "loadoutSecondaryAttachment" ( getplayerdata( "customClasses" , localvarint( "classIndex" ) , "weaponSetups" , 1 , "attachment" , 0 ) ); \
+				setLocalVarString "loadoutSecondaryAttachment2" ( getplayerdata( "customClasses" , localvarint( "classIndex" ) , "weaponSetups" , 1 , "attachment" , 1 ) ); \
+				if ( localvarstring( "loadoutSecondaryAttachment2" ) == "" ) \
+				{ \
+					setLocalVarString "loadoutSecondaryAttachment2" ( "none" ); \
+				} \
+				setLocalVarString "loadoutSecondaryCamo" ( getplayerdata( "customClasses" , localvarint( "classIndex" ) , "weaponSetups" , 1 , "camo" ) ); \
+				setLocalVarString "loadoutEquipment" ( getplayerdata( "customClasses" , localvarint( "classIndex" ) , "perks" , 0 ) ); \
+				setLocalVarString "loadoutPerk1" ( getplayerdata( "customClasses" , localvarint( "classIndex" ) , "perks" , 1 ) ); \
+				setLocalVarString "loadoutPerk2" ( getplayerdata( "customClasses" , localvarint( "classIndex" ) , "perks" , 2 ) ); \
+				setLocalVarString "loadoutPerk3" ( getplayerdata( "customClasses" , localvarint( "classIndex" ) , "perks" , 3 ) ); \
+				setLocalVarString "loadoutStreak1" ( getplayerdata( "killstreaks" , 0 ) ); \
+				setLocalVarString "loadoutStreak2" ( getplayerdata( "killstreaks" , 1 ) ); \
+				setLocalVarString "loadoutStreak3" ( getplayerdata( "killstreaks" , 2 ) ); \
+				setLocalVarString "loadoutDeathStreak" ( getplayerdata( "customClasses" , localvarint( "classIndex" ) , "perks" , 4 ) ); \
+				setLocalVarString "loadoutOffhandSecondary" ( getplayerdata( "customClasses" , localvarint( "classIndex" ) , "specialGrenade" ) ); \
+				setLocalVarString "loadoutClassName" ( getplayerdata( "customClasses" , localvarint( "classIndex" ) , "name" ) ); \
+			} \
+			leaveFocus \
+			{ \
+				setItemColor self backcolor 0 0 0 "0.0"; \
+				setLocalVarString "ui_hint_text" ( "@NULL_EMPTY" ); \
+				setLocalVarBool "ui_menuAButton" ( 0 ); \
+			} \
+		}
+
+		// custom classes
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+		itemDef
+		{
+			rect -272 28 -272 20 3 1
+			style 1
+			decoration
+			visible 1
+			forecolor 1 1 1 1
+			backcolor 1 1 1 0.25
+			background "gradient_fadein"
+			textfont 9
+			textalign 4
+			textalignx 4
+			textscale 0.375
+			exp text ( localvarstring( "loadoutClassName" ) )
+		}
+		itemDef
+		{
+			rect -272 268 -272 4 3 1
+			style 3
+			decoration
+			visible 1
+			forecolor 1 1 1 0
+			background "gradient_fadein"
+			textscale 0.55
+		}
+		itemDef
+		{
+			rect -272 48 -272 100 3 1
+			style 3
+			decoration
+			visible 1
+			forecolor 1 1 1 0.1
+			background "gradient_fadein"
+			textscale 0.55
+		}
+		itemDef
+		{
+			rect -272 48 272 100 3 1
+			style 3
+			decoration
+			visible 1
+			forecolor 1 1 1 0.5
+			textscale 0.55
+			visible when ( localvarstring( "loadoutPrimaryCamo" ) != "none" )
+			exp material ( tablelookup( "mp/camoTable.csv" , 1 , localvarstring( "loadoutPrimaryCamo" ) , 4 ) )
+		}
+		itemDef
+		{
+			rect -272 48 272 18 3 1
+			style 3
+			decoration
+			visible 1
+			forecolor 0 0 0 0.25
+			textscale 0.55
+			visible when ( localvarstring( "loadoutPrimaryCamo" ) != "none" )
+			exp material ( tablelookup( "mp/camoTable.csv" , 1 , localvarstring( "loadoutPrimaryCamo" ) , 4 ) )
+		}
+		itemDef
+		{
+			rect -272 48 -272 18 3 1
+			style 1
+			decoration
+			visible 1
+			forecolor 1 1 1 1
+			backcolor 0 0 0 0.35
+			background "gradient_fadein"
+			textfont 9
+			textalign 4
+			textalignx 4
+			textscale 0.375
+			exp text ( "@" + tablelookup( "mp/statsTable.csv" , 4 , localvarstring( "loadoutPrimary" ) , 3 ) )
+		}
+		itemDef
+		{
+			rect -200 48 200 101.333 3 1
+			style 3
+			decoration
+			visible 1
+			forecolor 1 1 1 1
+			textscale 0.55
+			exp material ( tablelookup( "mp/statsTable.csv" , 4 , localvarstring( "loadoutPrimary" ) , 6 ) )
+		}
+		itemDef
+		{
+			rect -268 66 40 40 3 1
+			style 3
+			decoration
+			visible 1
+			forecolor 1 1 1 0
+			textscale 0.55
+			exp material ( tablelookup( "mp/attachmentTable.csv" , 4 , localvarstring( "loadoutPrimaryAttachment2" ) , 6 ) )
+		}
+		itemDef
+		{
+			rect -268 106 40 40 3 1
+			style 3
+			decoration
+			visible 1
+			forecolor 1 1 1 1
+			textscale 0.55
+			exp material ( tablelookup( "mp/attachmentTable.csv" , 4 , localvarstring( "loadoutPrimaryAttachment" ) , 6 ) )
+		}
+		itemDef
+		{
+			rect -224 106 40 40 3 1
+			style 3
+			decoration
+			visible 1
+			forecolor 1 1 1 1
+			textscale 0.55
+			exp material ( tablelookup( "mp/attachmentTable.csv" , 4 , localvarstring( "loadoutPrimaryAttachment2" ) , 6 ) )
+		}
+		itemDef
+		{
+			rect -272 48 272 100 3 1
+			decoration
+			visible 1
+			forecolor 1 1 1 0
+			glowColor 0.5 0 0 1
+			textfont 3
+			textalign 12
+			textalignx 4
+			textscale 0.375
+			exp glowcolor a ( ( ( localvarstring( "loadoutPerk1" ) == "specialty_bling" && localvarstring( "loadoutPrimaryAttachment" ) == "none" ) ) )
+			visible when ( localvarstring( "loadoutPrimaryAttachment" ) != "none" || ( localvarstring( "loadoutPerk1" ) == "specialty_bling" && ( tablelookup( "mp/statsTable.csv" , 4 , localvarstring( "loadoutPrimary" ) , 11 ) != "" ) ) )
+			exp text ( locstring( "@MENU_PLUS" , "@" + tablelookup( "mp/attachmentTable.csv" , 4 , localvarstring( "loadoutPrimaryAttachment" ) , 3 ) ) )
+		}
+		itemDef
+		{
+			rect -272 48 272 100 3 1
+			decoration
+			visible 1
+			forecolor 1 1 1 0
+			glowColor 0.5 0 0 1
+			textfont 3
+			textalign 12
+			textalignx 4
+			textaligny -40
+			textscale 0.375
+			exp glowcolor a ( ( ( localvarstring( "loadoutPerk1" ) == "specialty_bling" && localvarstring( "loadoutPrimaryAttachment2" ) == "none" ) ) )
+			visible when ( ( isitemunlocked( "specialty_secondarybling" ) || 0 == 0 ) && localvarstring( "loadoutPrimaryAttachment2" ) != "none" || ( localvarstring( "loadoutPerk1" ) == "specialty_bling" && ( tablelookup( "mp/statsTable.csv" , 4 , localvarstring( "loadoutPrimary" ) , ( 11 + 1 ) ) != "" ) ) )
+			exp text ( locstring( "@MENU_PLUS" , "@" + tablelookup( "mp/attachmentTable.csv" , 4 , localvarstring( "loadoutPrimaryAttachment2" ) , 3 ) ) )
+		}
+		itemDef
+		{
+			rect -272 148 -272 100 3 1
+			style 3
+			decoration
+			visible 1
+			forecolor 1 1 1 0.1
+			background "gradient_fadein"
+			textscale 0.55
+		}
+		itemDef
+		{
+			rect -272 148 272 100 3 1
+			style 3
+			decoration
+			visible 1
+			forecolor 1 1 1 0.5
+			textscale 0.55
+			visible when ( localvarstring( "loadoutSecondaryCamo" ) != "none" )
+			exp material ( tablelookup( "mp/camoTable.csv" , 1 , localvarstring( "loadoutSecondaryCamo" ) , 4 ) )
+		}
+		itemDef
+		{
+			rect -272 148 272 18 3 1
+			style 3
+			decoration
+			visible 1
+			forecolor 0 0 0 0.25
+			textscale 0.55
+			visible when ( localvarstring( "loadoutSecondaryCamo" ) != "none" )
+			exp material ( tablelookup( "mp/camoTable.csv" , 1 , localvarstring( "loadoutSecondaryCamo" ) , 4 ) )
+		}
+		itemDef
+		{
+			rect -272 148 -272 18 3 1
+			style 1
+			decoration
+			visible 1
+			forecolor 1 1 1 1
+			backcolor 0 0 0 0.35
+			background "gradient_fadein"
+			textfont 9
+			textalign 4
+			textalignx 4
+			textscale 0.375
+			exp text ( "@" + tablelookup( "mp/statsTable.csv" , 4 , localvarstring( "loadoutSecondary" ) , 3 ) )
+		}
+		itemDef
+		{
+			rect -200 148 200 101.333 3 1
+			style 3
+			decoration
+			visible 1
+			forecolor 1 1 1 1
+			textscale 0.55
+			exp material ( tablelookup( "mp/statsTable.csv" , 4 , localvarstring( "loadoutSecondary" ) , 6 ) )
+		}
+		itemDef
+		{
+			rect -268 166 40 40 3 1
+			style 3
+			decoration
+			visible 1
+			forecolor 1 1 1 0
+			textscale 0.55
+			visible when ( localvarstring( "loadoutSecondaryAttachment2" ) != "none" )
+			exp material ( tablelookup( "mp/attachmentTable.csv" , 4 , localvarstring( "loadoutSecondaryAttachment2" ) , 6 ) )
+		}
+		itemDef
+		{
+			rect -268 206 40 40 3 1
+			style 3
+			decoration
+			visible 1
+			forecolor 1 1 1 1
+			textscale 0.55
+			exp material ( tablelookup( "mp/attachmentTable.csv" , 4 , localvarstring( "loadoutSecondaryAttachment" ) , 6 ) )
+		}
+		itemDef
+		{
+			rect -224 206 40 40 3 1
+			style 3
+			decoration
+			visible 1
+			forecolor 1 1 1 1
+			textscale 0.55
+			visible when ( localvarstring( "loadoutSecondaryAttachment2" ) != "none" )
+			exp material ( tablelookup( "mp/attachmentTable.csv" , 4 , localvarstring( "loadoutSecondaryAttachment2" ) , 6 ) )
+		}
+		itemDef
+		{
+			rect -272 148 272 100 3 1
+			decoration
+			visible 1
+			forecolor 1 1 1 0
+			glowColor 0.5 0 0 1
+			textfont 3
+			textalign 12
+			textalignx 4
+			textscale 0.375
+			exp glowcolor a ( ( ( localvarstring( "loadoutPerk1" ) == "specialty_bling" && localvarstring( "loadoutSecondaryAttachment" ) == "none" ) ) )
+			visible when ( localvarstring( "loadoutSecondaryAttachment" ) != "none" || ( localvarstring( "loadoutPerk1" ) == "specialty_bling" && ( tablelookup( "mp/statsTable.csv" , 4 , localvarstring( "loadoutSecondary" ) , 11 ) != "" ) ) )
+			exp text ( locstring( "@MENU_PLUS" , "@" + tablelookup( "mp/attachmentTable.csv" , 4 , localvarstring( "loadoutSecondaryAttachment" ) , 3 ) ) )
+		}
+		itemDef
+		{
+			rect -272 148 272 100 3 1
+			decoration
+			visible 1
+			forecolor 1 1 1 0
+			glowColor 0.5 0 0 1
+			textfont 3
+			textalign 12
+			textalignx 4
+			textaligny -40
+			textscale 0.375
+			exp glowcolor a ( ( ( localvarstring( "loadoutPerk1" ) == "specialty_bling" && localvarstring( "loadoutSecondaryAttachment2" ) == "none" ) ) )
+			visible when ( ( isitemunlocked( "specialty_secondarybling" ) || 1 == 0 ) && localvarstring( "loadoutSecondaryAttachment2" ) != "none" || ( localvarstring( "loadoutPerk1" ) == "specialty_bling" && ( tablelookup( "mp/statsTable.csv" , 4 , localvarstring( "loadoutSecondary" ) , ( 11 + 1 ) ) != "" ) ) )
+			exp text ( locstring( "@MENU_PLUS" , "@" + tablelookup( "mp/attachmentTable.csv" , 4 , localvarstring( "loadoutSecondaryAttachment2" ) , 3 ) ) )
+		}
+		itemDef
+		{
+			rect -272 268 -272 36 3 1
+			style 3
+			decoration
+			visible 1
+			forecolor 1 1 1 0.1
+			background "gradient_fadein"
+			textscale 0.55
+		}
+		itemDef
+		{
+			rect -268 268 36 36 3 1
+			style 3
+			decoration
+			visible 1
+			forecolor 1 1 1 1
+			textscale 0.55
+			visible when ( tablelookup( "mp/perkTable.csv" , 1 , localvarstring( "loadoutPerk1" ) , 8 ) == "specialty_null" || !isitemunlocked( tablelookup( "mp/perkTable.csv" , 1 , localvarstring( "loadoutPerk1" ) , 8 ) ) )
+			exp material ( tablelookup( "mp/perkTable.csv" , 1 , localvarstring( "loadoutPerk1" ) , 3 ) )
+		}
+		itemDef
+		{
+			rect -268 268 36 36 3 1
+			style 3
+			decoration
+			visible 1
+			forecolor 1 1 1 1
+			textscale 0.55
+			visible when ( tablelookup( "mp/perkTable.csv" , 1 , localvarstring( "loadoutPerk1" ) , 8 ) != "specialty_null" && isitemunlocked( tablelookup( "mp/perkTable.csv" , 1 , localvarstring( "loadoutPerk1" ) , 8 ) ) && localvarstring( "loadoutPerk1" ) != "" )
+			exp material ( tablelookup( "mp/perkTable.csv" , 1 , localvarstring( "loadoutPerk1" ) , 3 ) + "_upgrade" )
+		}
+		itemDef
+		{
+			rect -232 268 272 36 3 1
+			decoration
+			visible 1
+			forecolor 1 1 1 1
+			textfont 3
+			textalign 4
+			textalignx 4
+			textscale 0.375
+			exp text ( "@" + tablelookup( "mp/perkTable.csv" , 1 , localvarstring( "loadoutPerk1" ) , int( 2 + ( isitemunlocked( tablelookup( "mp/perkTable.csv" , 1 , localvarstring( "loadoutPerk1" ) , 8 ) ) * ( 9 - 2 ) ) ) ) )
+		}
+		itemDef
+		{
+			rect -228 284 228 18 3 1
+			decoration
+			autowrapped
+			visible 1
+			forecolor 1 1 1 0.65
+			type 21
+			textfont 3
+			textalign 4
+			textscale 0.375
+			visible when ( tablelookup( "mp/perkTable.csv" , 1 , localvarstring( "loadoutPerk1" ) , 8 ) == "specialty_null" || !isitemunlocked( tablelookup( "mp/perkTable.csv" , 1 , localvarstring( "loadoutPerk1" ) , 8 ) ) )
+			exp text ( "@" + tablelookup( "mp/perkTable.csv" , 1 , localvarstring( "loadoutPerk1" ) , 4 ) )
+		}
+		itemDef
+		{
+			rect -228 284 228 18 3 1
+			decoration
+			autowrapped
+			visible 1
+			forecolor 1 1 1 0.65
+			type 21
+			textfont 3
+			textalign 4
+			textscale 0.375
+			visible when ( tablelookup( "mp/perkTable.csv" , 1 , localvarstring( "loadoutPerk1" ) , 8 ) != "specialty_null" && isitemunlocked( tablelookup( "mp/perkTable.csv" , 1 , localvarstring( "loadoutPerk1" ) , 8 ) ) )
+			exp text ( "@" + tablelookup( "mp/perkTable.csv" , 1 , tablelookup( "mp/perkTable.csv" , 1 , localvarstring( "loadoutPerk1" ) , 8 ) , 9 ) )
+		}
+		itemDef
+		{
+			rect -272 304 -272 36 3 1
+			style 3
+			decoration
+			visible 1
+			forecolor 1 1 1 0.1
+			background "gradient_fadein"
+			textscale 0.55
+		}
+		itemDef
+		{
+			rect -268 304 36 36 3 1
+			style 3
+			decoration
+			visible 1
+			forecolor 1 1 1 1
+			textscale 0.55
+			visible when ( tablelookup( "mp/perkTable.csv" , 1 , localvarstring( "loadoutPerk2" ) , 8 ) == "specialty_null" || !isitemunlocked( tablelookup( "mp/perkTable.csv" , 1 , localvarstring( "loadoutPerk2" ) , 8 ) ) )
+			exp material ( tablelookup( "mp/perkTable.csv" , 1 , localvarstring( "loadoutPerk2" ) , 3 ) )
+		}
+		itemDef
+		{
+			rect -268 304 36 36 3 1
+			style 3
+			decoration
+			visible 1
+			forecolor 1 1 1 1
+			textscale 0.55
+			visible when ( tablelookup( "mp/perkTable.csv" , 1 , localvarstring( "loadoutPerk2" ) , 8 ) != "specialty_null" && isitemunlocked( tablelookup( "mp/perkTable.csv" , 1 , localvarstring( "loadoutPerk2" ) , 8 ) ) && localvarstring( "loadoutPerk2" ) != "" )
+			exp material ( tablelookup( "mp/perkTable.csv" , 1 , localvarstring( "loadoutPerk2" ) , 3 ) + "_upgrade" )
+		}
+		itemDef
+		{
+			rect -232 304 272 36 3 1
+			decoration
+			visible 1
+			forecolor 1 1 1 1
+			textfont 3
+			textalign 4
+			textalignx 4
+			textscale 0.375
+			exp text ( "@" + tablelookup( "mp/perkTable.csv" , 1 , localvarstring( "loadoutPerk2" ) , int( 2 + ( isitemunlocked( tablelookup( "mp/perkTable.csv" , 1 , localvarstring( "loadoutPerk2" ) , 8 ) ) * ( 9 - 2 ) ) ) ) )
+		}
+		itemDef
+		{
+			rect -228 320 228 18 3 1
+			decoration
+			autowrapped
+			visible 1
+			forecolor 1 1 1 0.65
+			type 21
+			textfont 3
+			textalign 4
+			textscale 0.375
+			visible when ( tablelookup( "mp/perkTable.csv" , 1 , localvarstring( "loadoutPerk2" ) , 8 ) == "specialty_null" || !isitemunlocked( tablelookup( "mp/perkTable.csv" , 1 , localvarstring( "loadoutPerk2" ) , 8 ) ) )
+			exp text ( "@" + tablelookup( "mp/perkTable.csv" , 1 , localvarstring( "loadoutPerk2" ) , 4 ) )
+		}
+		itemDef
+		{
+			rect -228 320 228 18 3 1
+			decoration
+			autowrapped
+			visible 1
+			forecolor 1 1 1 0.65
+			type 21
+			textfont 3
+			textalign 4
+			textscale 0.375
+			visible when ( tablelookup( "mp/perkTable.csv" , 1 , localvarstring( "loadoutPerk2" ) , 8 ) != "specialty_null" && isitemunlocked( tablelookup( "mp/perkTable.csv" , 1 , localvarstring( "loadoutPerk2" ) , 8 ) ) )
+			exp text ( "@" + tablelookup( "mp/perkTable.csv" , 1 , tablelookup( "mp/perkTable.csv" , 1 , localvarstring( "loadoutPerk2" ) , 8 ) , 9 ) )
+		}
+		itemDef
+		{
+			rect -272 340 -272 36 3 1
+			style 3
+			decoration
+			visible 1
+			forecolor 1 1 1 0.1
+			background "gradient_fadein"
+			textscale 0.55
+		}
+		itemDef
+		{
+			rect -268 340 36 36 3 1
+			style 3
+			decoration
+			visible 1
+			forecolor 1 1 1 1
+			textscale 0.55
+			visible when ( tablelookup( "mp/perkTable.csv" , 1 , localvarstring( "loadoutPerk3" ) , 8 ) == "specialty_null" || !isitemunlocked( tablelookup( "mp/perkTable.csv" , 1 , localvarstring( "loadoutPerk3" ) , 8 ) ) )
+			exp material ( tablelookup( "mp/perkTable.csv" , 1 , localvarstring( "loadoutPerk3" ) , 3 ) )
+		}
+		itemDef
+		{
+			rect -268 340 36 36 3 1
+			style 3
+			decoration
+			visible 1
+			forecolor 1 1 1 1
+			textscale 0.55
+			visible when ( tablelookup( "mp/perkTable.csv" , 1 , localvarstring( "loadoutPerk3" ) , 8 ) != "specialty_null" && isitemunlocked( tablelookup( "mp/perkTable.csv" , 1 , localvarstring( "loadoutPerk3" ) , 8 ) ) && localvarstring( "loadoutPerk3" ) != "" )
+			exp material ( tablelookup( "mp/perkTable.csv" , 1 , localvarstring( "loadoutPerk3" ) , 3 ) + "_upgrade" )
+		}
+		itemDef
+		{
+			rect -232 340 272 36 3 1
+			decoration
+			visible 1
+			forecolor 1 1 1 1
+			textfont 3
+			textalign 4
+			textalignx 4
+			textscale 0.375
+			exp text ( "@" + tablelookup( "mp/perkTable.csv" , 1 , localvarstring( "loadoutPerk3" ) , int( 2 + ( isitemunlocked( tablelookup( "mp/perkTable.csv" , 1 , localvarstring( "loadoutPerk3" ) , 8 ) ) * ( 9 - 2 ) ) ) ) )
+		}
+		itemDef
+		{
+			rect -228 356 228 18 3 1
+			decoration
+			autowrapped
+			visible 1
+			forecolor 1 1 1 0.65
+			type 21
+			textfont 3
+			textalign 4
+			textscale 0.375
+			visible when ( tablelookup( "mp/perkTable.csv" , 1 , localvarstring( "loadoutPerk3" ) , 8 ) == "specialty_null" || !isitemunlocked( tablelookup( "mp/perkTable.csv" , 1 , localvarstring( "loadoutPerk3" ) , 8 ) ) )
+			exp text ( "@" + tablelookup( "mp/perkTable.csv" , 1 , localvarstring( "loadoutPerk3" ) , 4 ) )
+		}
+		itemDef
+		{
+			rect -228 356 228 18 3 1
+			decoration
+			autowrapped
+			visible 1
+			forecolor 1 1 1 0.65
+			type 21
+			textfont 3
+			textalign 4
+			textscale 0.375
+			visible when ( tablelookup( "mp/perkTable.csv" , 1 , localvarstring( "loadoutPerk3" ) , 8 ) != "specialty_null" && isitemunlocked( tablelookup( "mp/perkTable.csv" , 1 , localvarstring( "loadoutPerk3" ) , 8 ) ) )
+			exp text ( "@" + tablelookup( "mp/perkTable.csv" , 1 , tablelookup( "mp/perkTable.csv" , 1 , localvarstring( "loadoutPerk3" ) , 8 ) , 9 ) )
+		}
+		itemDef
+		{
+			rect -272 376 -272 36 3 1
+			style 3
+			decoration
+			visible 1
+			forecolor 1 1 1 0.1
+			background "gradient_fadein"
+			textscale 0.55
+		}
+		itemDef
+		{
+			rect -268 376 36 36 3 1
+			style 3
+			decoration
+			visible 1
+			forecolor 1 1 1 1
+			textscale 0.55
+			exp material ( tablelookup( "mp/perkTable.csv" , 1 , localvarstring( "loadoutDeathStreak" ) , 3 ) )
+		}
+		itemDef
+		{
+			rect -232 376 272 36 3 1
+			decoration
+			visible 1
+			forecolor 1 1 1 1
+			textfont 3
+			textalign 4
+			textalignx 4
+			textscale 0.375
+			exp text ( "@" + tablelookup( "mp/perkTable.csv" , 1 , localvarstring( "loadoutDeathStreak" ) , 2 ) )
+		}
+		itemDef
+		{
+			rect -272 376 -272 1 3 1
+			style 3
+			decoration
+			visible 1
+			forecolor 0 0 0 0.5
+			background "gradient_fadein"
+			textscale 0.55
+		}
+		itemDef
+		{
+			rect -272 248 -272 20 3 1
+			style 3
+			decoration
+			visible 1
+			forecolor 1 1 1 0.1
+			background "gradient_fadein"
+			textscale 0.55
+		}
+		itemDef
+		{
+			rect -272 248 -272 20 3 1
+			style 3
+			decoration
+			visible 1
+			forecolor 0 0 0 0.35
+			background "gradient_fadein"
+			textscale 0.55
+		}
+		itemDef
+		{
+			rect -268 248 20 20 3 1
+			style 3
+			decoration
+			visible 1
+			forecolor 1 1 1 1
+			textscale 0.55
+			background "equipment_throwing_knife"
+		}
+		itemDef
+		{
+			rect -248 248 272 20 3 1
+			decoration
+			visible 1
+			forecolor 1 1 1 1
+			textfont 3
+			textalign 4
+			textalignx 4
+			textscale 0.375
+			text "Throwing Knife"
+		}
+
+
+		itemDef
+		{
+			rect -272 268 -272 1 3 1
+			style 3
+			decoration
+			visible 1
+			forecolor 0 0 0 0.5
+			background "gradient_fadein"
+			textscale 0.55
+		}
+		/*
+		itemDef
+		{
+			rect -64 -40 336 20 1 3
+			visible 1
+			group "mw2_button"
+			style 1
+			forecolor 1 1 1 1
+			disablecolor 0.6 0.55 0.55 1
+			background "menu_button_selection_bar"
+			type 1
+			textfont 3
+			textalign 6
+			textalignx -60
+			textscale 0.375
+			text "@PLATFORM_FRIENDS_CAPS"
+			action
+			{
+				play "mouse_click";
+				open "popup_friends";
+			}
+			onFocus
+			{
+				play "mouse_over";
+				if ( dvarstring( "gameMode" ) != "mp" )
+				{
+					setItemColor "mw2_button" backcolor 0 0 0 0;
+				}
+				setItemColor self backcolor 0 0 0 1;
+				setLocalVarBool "ui_menuAButton" ( 1 );
+			}
+			leaveFocus
+			{
+				setItemColor self backcolor 0 0 0 "0.0";
+				setLocalVarString "ui_hint_text" ( "@NULL_EMPTY" );
+				setLocalVarBool "ui_menuAButton" ( 0 );
+			}
+		}
+		itemDef
+		{
+			rect -64 -20 336 20 1 3
+			visible 1
+			group "mw2_button"
+			style 1
+			forecolor 1 1 1 1
+			disablecolor 0.6 0.55 0.55 1
+			background "menu_button_selection_bar"
+			type 1
+			textfont 3
+			textalign 6
+			textalignx -60
+			textscale 0.375
+			text "@PLATFORM_BACK_CAPS"
+			visible when ( "@PLATFORM_BACK_CAPS" == "@PLATFORM_BACK_CAPS" )
+			action
+			{
+				play "mouse_click";
+				play "mouse_click";
+				"escape" self;
+			}
+			onFocus
+			{
+				play "mouse_over";
+				if ( dvarstring( "gameMode" ) != "mp" )
+				{
+					setItemColor "mw2_button" backcolor 0 0 0 0;
+				}
+				setItemColor self backcolor 0 0 0 1;
+				setLocalVarBool "ui_menuAButton" ( 1 );
+			}
+			leaveFocus
+			{
+				setItemColor self backcolor 0 0 0 "0.0";
+				setLocalVarString "ui_hint_text" ( "@NULL_EMPTY" );
+				setLocalVarBool "ui_menuAButton" ( 0 );
+			}
+		}
+		itemDef
+		{
+			rect -64 -20 336 20 1 3
+			visible 1
+			group "mw2_button"
+			style 1
+			forecolor 1 1 1 1
+			disablecolor 0.6 0.55 0.55 1
+			background "menu_button_selection_bar"
+			type 1
+			textfont 3
+			textalign 6
+			textalignx -60
+			textscale 0.375
+			text "@PLATFORM_BACK_CAPS"
+			visible when ( "@PLATFORM_BACK_CAPS" == "@PLATFORM_GAME_SUMMARY_CAPS" )
+			action
+			{
+				play "mouse_click";
+				play "mouse_click";
+				open "popup_summary";
+			}
+			onFocus
+			{
+				play "mouse_over";
+				if ( dvarstring( "gameMode" ) != "mp" )
+				{
+					setItemColor "mw2_button" backcolor 0 0 0 0;
+				}
+				setItemColor self backcolor 0 0 0 1;
+				setLocalVarBool "ui_menuAButton" ( 1 );
+			}
+			leaveFocus
+			{
+				setItemColor self backcolor 0 0 0 "0.0";
+				setLocalVarString "ui_hint_text" ( "@NULL_EMPTY" );
+				setLocalVarBool "ui_menuAButton" ( 0 );
+			}
+		}*/
+	}
+}

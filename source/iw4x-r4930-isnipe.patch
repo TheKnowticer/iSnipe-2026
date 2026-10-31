@@ -1,0 +1,300 @@
+diff --git a/src/Components/Modules/Dvar.cpp b/src/Components/Modules/Dvar.cpp
+index 6e1e49c6..70679f40 100644
+--- a/src/Components/Modules/Dvar.cpp
++++ b/src/Components/Modules/Dvar.cpp
+@@ -350,6 +350,14 @@ namespace Components
+ 
+ 	void Dvar::OnRegisterVariant([[maybe_unused]] Game::dvar_t* dvar)
+ 	{
++        // Dedicated server only: permit the host to configure unlimited sprint
++        // without enabling sv_cheats or changing other protected dvars.
++        if (Dedicated::IsEnabled() && dvar && dvar->name &&
++            std::strcmp(dvar->name, "player_sprintUnlimited") == 0)
++        {
++            dvar->flags &= ~Game::DVAR_CHEAT;
++            dvar->flags |= Game::DVAR_CODINFO;
++        }
+ #ifdef _DEBUG
+ 		dvar->flags &= ~Game::DVAR_CHEAT;
+ #endif
+diff --git a/src/Components/Modules/PlayerMovement.cpp b/src/Components/Modules/PlayerMovement.cpp
+index 5a293d3c..cdf7d4e9 100644
+--- a/src/Components/Modules/PlayerMovement.cpp
++++ b/src/Components/Modules/PlayerMovement.cpp
+@@ -1,5 +1,6 @@
+ #include "PlayerMovement.hpp"
+ #include "Events.hpp"
++#include "Bans.hpp"
+ #include "GSC/Script.hpp"
+ 
+ constexpr int MASK_PLAYER_CLIP = 0x10000;
+@@ -7,6 +8,184 @@ constexpr int MASK_BARRIER_CLIP = 0x400;
+ 
+ namespace Components
+ {
++	static std::string ISnipeAnnouncementText(const char* value, const Game::gentity_s* player)
++	{
++		std::string text = value ? value : "";
++		const auto replaceAll = [&text](const std::string& token, const std::string& replacement)
++		{
++			std::size_t pos = 0;
++			while ((pos = text.find(token, pos)) != std::string::npos)
++			{
++				text.replace(pos, token.size(), replacement);
++				pos += replacement.size();
++			}
++		};
++		if (player && player->client)
++			replaceAll("{player}", player->client->sess.cs.name);
++		const auto* hostname = Game::Dvar_FindVar("sv_hostname");
++		if (hostname && hostname->current.string)
++			replaceAll("{server}", hostname->current.string);
++		// Keep chat commands well formed even for names containing quotes.
++		for (auto& ch : text)
++		{
++			if (ch == '"' || ch == '\\' || static_cast<unsigned char>(ch) < 32)
++				ch = ' ';
++		}
++		if (text.size() > 200) text.resize(200);
++		return text;
++	}
++
++	static void ISnipeLocalMinute()
++	{
++		SYSTEMTIME now{};
++		GetLocalTime(&now);
++		const auto value = std::format("{:04}-{:02}-{:02} {:02}:{:02}", now.wYear, now.wMonth, now.wDay, now.wHour, now.wMinute);
++		Game::Scr_AddString(value.c_str());
++	}
++
++	static void ISnipeAnnounceAll()
++	{
++		const auto text = ISnipeAnnouncementText(Game::Scr_GetString(0), nullptr);
++		if (text.empty()) return;
++		Game::SV_GameSendServerCommand(-1, Game::SV_CMD_CAN_IGNORE, Utils::String::Format("{:c} \"{}\"", 0x68, text));
++		Logger::Print("iSnipe announcement: {}\n", text);
++	}
++
++	static void ISnipeAnnouncePlayer(const Game::scr_entref_t entref)
++	{
++		const auto* player = GSC::Script::Scr_GetPlayerEntity(entref);
++		if (!player || !player->client) return;
++		const auto text = ISnipeAnnouncementText(Game::Scr_GetString(0), player);
++		if (text.empty()) return;
++		Game::SV_GameSendServerCommand(player->s.number, Game::SV_CMD_CAN_IGNORE, Utils::String::Format("{:c} \"{}\"", 0x68, text));
++		Logger::Print("iSnipe welcome delivered to client {}\n", player->s.number);
++	}
++
++	// RCON-only panel commands: validate the current connection in the same
++	// server frame as a kick/ban so a reused client slot cannot target another
++	// connection. The panel never submits player names as console commands.
++	static void ISnipeRegisterPanelCommands()
++	{
++		Command::AddSV("isnipePanelPlayers", [](const Command::Params*)
++		{
++			nlohmann::json players = nlohmann::json::array();
++			for (int i = 0; i < Game::MAX_CLIENTS; ++i)
++			{
++				const auto& cl = Game::svs_clients[i];
++				if (cl.header.state < Game::CS_ACTIVE || !cl.gentity || !cl.gentity->client) continue;
++				players.push_back({{"slot", i}, {"guid", std::format("{:016X}", cl.steamID)},
++					{"session", cl.lastConnectTime}, {"challenge", cl.challenge},
++					{"name", std::string(cl.name, strnlen(cl.name, sizeof(cl.name)))},
++					{"bot", cl.bIsTestClient != 0}, {"ping", cl.ping},
++					{"score", Game::SV_GameClientNum_Score(i)}});
++			}
++			Logger::Print("ISNIPE_PLAYERS:{}\n", players.dump(-1, ' ', false, nlohmann::json::error_handler_t::replace));
++		});
++
++		const auto moderate = [](const Command::Params* params, const bool ban)
++		{
++			if (params->size() != 5)
++			{
++				Logger::Print("ISNIPE_PANEL_ERROR:Invalid identity\n");
++				return;
++			}
++			const std::string slotText = params->get(1);
++			if (slotText.empty() || slotText.size() > 2 || slotText.find_first_not_of("0123456789") != std::string::npos)
++			{
++				Logger::Print("ISNIPE_PANEL_ERROR:Invalid slot\n");
++				return;
++			}
++			const auto slot = std::strtoul(slotText.c_str(), nullptr, 10);
++			if (slot >= Game::MAX_CLIENTS)
++			{
++				Logger::Print("ISNIPE_PANEL_ERROR:Invalid slot\n");
++				return;
++			}
++			auto* cl = &Game::svs_clients[slot];
++			if (cl->header.state < Game::CS_ACTIVE || std::format("{:016X}", cl->steamID) != params->get(2) ||
++				std::to_string(cl->lastConnectTime) != params->get(3) || std::to_string(cl->challenge) != params->get(4))
++			{
++				Logger::Print("ISNIPE_PANEL_ERROR:Player connection changed; refresh and try again\n");
++				return;
++			}
++			if (ban && cl->bIsTestClient)
++			{
++				Logger::Print("ISNIPE_PANEL_ERROR:Test bots cannot be banned\n");
++				return;
++			}
++			if (ban) Bans::BanClient(cl, "EXE_ERR_BANNED_PERM");
++			else Game::SV_DropClient(cl, "EXE_PLAYERKICKED", true);
++			Logger::Print("ISNIPE_PANEL_OK:{}\n", ban ? "banned" : "kicked");
++		};
++		Command::AddSV("isnipePanelKick", [moderate](const Command::Params* params) { moderate(params, false); });
++		Command::AddSV("isnipePanelBan", [moderate](const Command::Params* params) { moderate(params, true); });
++
++		Command::AddSV("isnipePanelSay", [](const Command::Params* params)
++		{
++			if (params->size() != 2) { Logger::Print("ISNIPE_PANEL_ERROR:Invalid message\n"); return; }
++			const std::string encoded = params->get(1);
++			if (encoded.empty() || encoded.size() > 400 || encoded.size() % 2 || encoded.find_first_not_of("0123456789abcdefABCDEF") != std::string::npos)
++			{
++				Logger::Print("ISNIPE_PANEL_ERROR:Invalid message\n"); return;
++			}
++			std::string text;
++			for (std::size_t i = 0; i < encoded.size(); i += 2)
++				text.push_back(static_cast<char>(std::strtoul(encoded.substr(i, 2).c_str(), nullptr, 16)));
++			text = ISnipeAnnouncementText(text.c_str(), nullptr);
++			Game::SV_GameSendServerCommand(-1, Game::SV_CMD_CAN_IGNORE, Utils::String::Format("{:c} \"{}\"", 0x68, text));
++			Logger::Print("ISNIPE_PANEL_OK:announcement sent\n");
++		});
++	}
++
++	// The stock obituary builtin only emits EV_OBITUARY. Keep the stock path
++	// available when the custom iSnipe feed is disabled.
++	static void ISnipeObituary()
++	{
++		const auto* enabled = Game::Dvar_FindVar("isnipe_killfeed_enabled");
++		if (!enabled || !enabled->current.enabled)
++		{
++			reinterpret_cast<void(*)()>(0x5F70E0)();
++		}
++		else
++		{
++			static bool reported = false;
++			if (!reported)
++			{
++				Logger::Print("iSnipe killfeed: stock obituary event suppressed\n");
++				reported = true;
++			}
++		}
++	}
++
++	static void ISnipeWeaponKillIcon()
++	{
++		const auto* weapon = Game::Scr_GetString(0);
++		if (!weapon || !*weapon)
++		{
++			Game::Scr_AddString("");
++			return;
++		}
++		const auto index = Game::G_GetWeaponIndexForName(weapon);
++		const auto* definition = index ? Game::BG_GetWeaponCompleteDef(index) : nullptr;
++		const auto* icon = definition ? definition->killIcon : nullptr;
++		Game::Scr_AddString(icon && icon->info.name ? icon->info.name : "");
++	}
++
++	static void ISnipeLogWeaponAccuracy()
++	{
++		const auto* name = Game::Scr_GetString(0);
++		const auto index = name ? Game::G_GetWeaponIndexForName(name) : 0;
++		const auto* def = index ? Game::BG_GetWeaponDef(index) : nullptr;
++		if (!def)
++		{
++			Logger::Print("iSnipe accuracy: weapon not found\n");
++			return;
++		}
++		Logger::Print("iSnipe accuracy {}: hip stand {}-{}, idle ADS {}, sway max {}, ADS sway max {}\n",
++			name, def->fHipSpreadStandMin, def->hipSpreadStandMax, def->fAdsIdleAmount,
++			def->swayMaxAngle, def->adsSwayMaxAngle);
++	}
++
+ 	const Game::dvar_t* PlayerMovement::BGRocketJump;
+ 	const Game::dvar_t* PlayerMovement::BGRocketJumpScale;
+ 	const Game::dvar_t* PlayerMovement::BGPlayerEjection;
+@@ -253,6 +432,36 @@ namespace Components
+ 		}
+ 	}
+ 
++	// Set Marathon's replicated effect bit without replacing the normal perk slot.
++	void PlayerMovement::GScr_ISnipeGrantMarathon(const Game::scr_entref_t entref)
++	{
++		auto* ent = Game::GetEntity(entref);
++		if (!ent || !ent->client)
++		{
++			Game::Scr_Error("ISnipeGrantMarathon can only be called on a player");
++			return;
++		}
++		constexpr unsigned int index = Game::PERK_MARATHON;
++		ent->client->ps.perks[index >> 5] |= (1u << (index & 31));
++	}
++
++	// Emit the replicated fire event without invoking the server weapon-fire routine.
++	void PlayerMovement::GScr_ISnipeSetCompassPing(const Game::scr_entref_t entref)
++	{
++		auto* ent = Game::GetEntity(entref);
++		if (!ent || !ent->client)
++		{
++			Game::Scr_Error("ISnipeSetCompassPing can only be called on a player");
++			return;
++		}
++		if (Game::Scr_GetInt(0) && ent->health > 0)
++		{
++		    const auto before = ent->client->ps.unpredictableEventSequence;
++		    Game::G_AddEvent(ent, Game::EV_FIRE_WEAPON, 0);
++		    Logger::Print("iSnipe radar test: player {} queued {} -> {}, psweapon {}, entityweapon {}, gscweapon {}\n", ent->s.number, before, ent->client->ps.unpredictableEventSequence, ent->client->ps.weapCommon.weapon, ent->s.weapon, Game::Scr_GetString(1));
++		}
++	}
++
+ 	void PlayerMovement::GScr_IsSprinting(const Game::scr_entref_t entref)
+ 	{
+ 		const auto* client = Game::GetEntity(entref)->client;
+@@ -357,11 +566,20 @@ namespace Components
+ 
+ 	PlayerMovement::PlayerMovement()
+ 	{
++		if (Dedicated::IsEnabled())
++		{
++			// IW4x r4930 script builtin table entry for obituary.
++			Utils::Hook::Set<Game::BuiltinFunction>(0x79AB8C, ISnipeObituary);
++			Events::OnSVInit(ISnipeRegisterPanelCommands);
++		}
++
+ 		AssertOffset(Game::playerState_s, eFlags, 0xB0);
+ 		AssertOffset(Game::playerState_s, pm_flags, 0xC);
+ 
+ 		Events::OnDvarInit([]
+ 		{
++			Game::Dvar_RegisterBool("isnipe_killfeed_enabled", false, Game::DVAR_NONE,
++				"Use the iSnipe killfeed instead of stock obituary events");
+ 			static const char* bg_bouncesValues[] =
+ 			{
+ 				"disabled",
+@@ -419,6 +637,13 @@ namespace Components
+ 		Utils::Hook(0x574AF4, PM_CheckLadderMove_Stub, HOOK_CALL).install()->quick(); 	// single PM_CheckLadderMove call inside PmoveSingle
+ 
+ 		GSC::Script::AddMethod("IsSprinting", GScr_IsSprinting);
++		GSC::Script::AddMethod("ISnipeGrantMarathon", GScr_ISnipeGrantMarathon);
++		GSC::Script::AddMethod("ISnipeSetCompassPing", GScr_ISnipeSetCompassPing);
++		GSC::Script::AddFunction("ISnipeWeaponKillIcon", ISnipeWeaponKillIcon);
++		GSC::Script::AddFunction("ISnipeLogWeaponAccuracy", ISnipeLogWeaponAccuracy);
++		GSC::Script::AddFunction("ISnipeLocalMinute", ISnipeLocalMinute);
++		GSC::Script::AddFunction("ISnipeAnnounceAll", ISnipeAnnounceAll);
++		GSC::Script::AddMethod("ISnipeAnnouncePlayer", ISnipeAnnouncePlayer);
+ 
+ 		RegisterMovementDvars();
+ 	}
+diff --git a/src/Components/Modules/PlayerMovement.hpp b/src/Components/Modules/PlayerMovement.hpp
+index 37e9ec98..694a1032 100644
+--- a/src/Components/Modules/PlayerMovement.hpp
++++ b/src/Components/Modules/PlayerMovement.hpp
+@@ -51,6 +51,8 @@ namespace Components
+ 		static void Jump_Check_Stub();
+ 
+ 		static void GScr_IsSprinting(Game::scr_entref_t entref);
++		static void GScr_ISnipeGrantMarathon(Game::scr_entref_t entref);
++		static void GScr_ISnipeSetCompassPing(Game::scr_entref_t entref);
+ 
+ 		static const Game::dvar_t* Dvar_RegisterSpectateSpeedScale(const char* dvarName, float value, float min, float max, unsigned __int16 flags, const char* description);
+ 
