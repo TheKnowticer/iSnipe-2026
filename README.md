@@ -39,6 +39,10 @@ Run `Start-iSnipe-Control.bat`, then visit `http://HOST-LAN-IP:8787/` on a trust
 
 The panel uses unencrypted HTTP and is intended for a trusted LAN. Do not forward port 8787 to the Internet. Game RCON is restricted to localhost by the generated config. Bans add both an IP and a GUID; remove both entries to completely unban someone. Never publish `panel-settings.json`, `panel-password.txt`, `isnipe-panel-rcon.cfg`, player logs, or ban data.
 
+## Troubleshooting
+
+**?Stat version 160 does not match server stat version 161?**: the client is using an older player-data definition than the server. Updating the IW4x DLL alone may not update the rawfiles. Close the game on the player?s computer, use the IW4x launcher to update or repair its rawfiles, and restart the client. The tested server uses [IW4x rawfiles v0.2.40](https://github.com/iw4x/iw4x-rawfiles/releases/tag/v0.2.40), whose player-data definition is version 161. Do not delete player profiles or reset stats to address this mismatch. If the server is also updated with the launcher, restore the custom iSnipe DLL afterward because an update may replace it.
+
 ## Source and rebuilding
 
 - `install/mods/`: current server GSC, voting scripts, compiled mod fastfiles and UI packages. Each game mode has its own folder and leaderboard data at runtime.
