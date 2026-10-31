@@ -48,8 +48,21 @@ The panel uses unencrypted HTTP and is intended for a trusted LAN. Do not forwar
 
 Back up your configuration, `mods/<mode>/scriptdata/` leaderboard journals, and `userraw/bans.json` before updating. Replace the mod and DLL files only while servers are stopped, preserving your private panel files and settings. Keep the custom DLL aligned with the included GSC and IW4x revision. To uninstall, stop the servers, restore your previous DLL, and remove the installed iSnipe mod folders, launchers, panel and iSnipe configuration files after backing up any data you need.
 
-## Provenance and status
+## Credits and acknowledgments
 
-The implementation incorporates and builds on [eztso/iw4xSniper](https://github.com/eztso/iw4xSniper) (GPL-3.0), [iSnipe](https://github.com/isnipe/iSnipe), IW4x, and the map-vote code credited in `install/mods/*/scripts/vote.gsc` to |UzD|GaZa and fella_guy. License texts are provided where available; third-party game-derived and map-preview assets retain their respective owners' rights. The M40A3 content is based on an IW4x COD4 weapon pack. The supplied fastfile and preview assets originate from the working installation; asset ownership and permission for any further redistribution should be checked by the distributor.
+This recreation builds on work by the IW4x and Call of Duty modding communities. Thank you to the developers and contributors behind these projects:
+
+- **[IW4x contributors](https://github.com/iw4x/iw4x-client)** ? the client, dedicated-server platform, tooling, and source used as the basis for the custom DLL. The [IW4x rawfiles contributors](https://github.com/iw4x/iw4x-rawfiles) also provide game scripts and assets used as references.
+- **[iSnipe developers and contributors](https://github.com/isnipe/iSnipe)** ? the original iSnipe project and its gameplay and anti-camp ideas, used as a reference for this recreation.
+- **[eztso and the iw4xSniper contributors](https://github.com/eztso/iw4xSniper)** ? the IW4x sniper mod and gametype scripts incorporated into this project. The upstream project also thanks **Santahunter** for code contributions and **tccr** and **raidmax** for IW4x assistance. Its GPL-3.0 license is included in [`LICENSE-iw4xSniper.txt`](LICENSE-iw4xSniper.txt).
+- **|UzD|GaZa and fella_guy** ? the original map-vote menu and modified map-vote code, respectively, as credited in the bundled vote scripts. The map-vote update script also credits fella_guy.
+- **[Muhlex](https://github.com/Muhlex/iw4x-gsc)** ? IW4x GSC examples consulted for scripting and killstreak behavior.
+- **[Blackburn29 and contributors to the MW2 Mod Collection](https://github.com/Blackburn29/MW2-Mod-Collection/tree/master/SnipeMOD)** ? SnipeMOD material consulted as an additional reference.
+- **The creators of the IW4x COD4 weapon pack** ? the M40A3 content was derived from the supplied pack. The copy available to this project does not identify its authors, so individual attribution could not be verified.
+- **Infinity Ward and Activision** ? the original Modern Warfare 2 game and underlying game assets.
+
+License texts are provided where available; third-party game-derived and map-preview assets retain their respective owners' rights. The supplied fastfile and preview assets originate from the working installation; asset ownership and permission for further redistribution should be checked by the distributor.
+
+## Project status
 
 These files were assembled from a functioning three-server installation. Public connectivity and multiplayer behavior depend on the host, IW4x version, installed maps and clients; they are not guaranteed by a static package check. See `docs/BUILD.md` for known source and validation limits.
