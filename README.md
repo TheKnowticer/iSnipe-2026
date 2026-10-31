@@ -1,4 +1,4 @@
-﻿# iSnipe 2026 for IW4x
+# iSnipe 2026 for IW4x
 
 A custom iSnipe-inspired server setup for the original Call of Duty: Modern Warfare 2 (2009) and IW4x. Includes S&D, Team Deathmatch and Free-for-All variants, two sniper classes (Intervention and M40A3), map voting, a persistent per-server leaderboard (`!lb`, `!leaderboard`, `!top10`), anti-camp radar, killfeed, configurable announcements, and an optional LAN administration panel.
 
@@ -8,6 +8,20 @@ A custom iSnipe-inspired server setup for the original Call of Duty: Modern Warf
 - Windows x86-compatible IW4x r4930 environment. `install/iw4x.dll` is a custom build based on upstream r4930 commit `67cd11ad5dc5a93b32a1903665706a847fcde33c`. Keep a backup of your existing DLL. An IW4x update can replace it.
 - Python 3.10+ for the control panel and its credential setup. The game servers do not require the panel to be running.
 - For Internet play, forward each server's UDP game port and TCP mod-download port to the host. The game installation, commercial game assets, and IW4x launcher are not provided here.
+
+## Why a custom IW4x DLL is included
+
+The iSnipe GSC scripts call native functions added to the supplied `iw4x.dll` and depend on a few server-engine changes that stock IW4x r4930 does not provide. Without this DLL, scripts that call the added functions can fail, and features such as unlimited sprint, the custom killfeed, announcements, and panel player controls will not work as intended. This is a **dedicated-server build** based on the revision listed above; players still need a compatible IW4x client and download the mod assets normally. The DLL does not enable `sv_cheats` globally.
+
+The custom build provides:
+
+- **Unlimited sprint:** `ISnipeGrantMarathon` sets the replicated Marathon perk effect without replacing an ordinary perk slot. It also permits the host to configure `player_sprintUnlimited` on a dedicated server without enabling cheat mode; the supplied setup uses the Marathon effect.
+- **Killfeed support:** a server-side obituary hook suppresses the stock killfeed event when the custom feed is enabled. `ISnipeWeaponKillIcon` looks up the weapon's real kill icon for the script-driven feed. When the custom feed is disabled, the stock obituary path remains available.
+- **Announcements:** `ISnipeLocalMinute` supplies the host's local date and time to the scheduler, while `ISnipeAnnounceAll` and `ISnipeAnnouncePlayer` deliver server-wide and individual chat messages. The GSC script handles scheduling and welcome-message timing.
+- **Control-panel integration:** `isnipePanelPlayers`, `isnipePanelKick`, `isnipePanelBan`, and `isnipePanelSay` are dedicated-server RCON commands. Moderation commands validate the player's slot, GUID, and current connection identity before acting, reducing the risk of targeting a replacement player after a slot is reused.
+- **Diagnostics and legacy radar support:** `ISnipeLogWeaponAccuracy` logs selected weapon spread and sway values. `ISnipeSetCompassPing` is a legacy firing-event ping used by the fallback radar path; it can produce firing effects. The normal configured anti-camp radar overlay is implemented by the mod scripts and assets, rather than this legacy function.
+
+Map voting, the leaderboard, loadouts, anti-camp position checks, and most match rules are implemented in the bundled GSC scripts, configurations, and assets; they are not all DLL features. The exact changes are available in [`source/iw4x-r4930-isnipe.patch`](source/iw4x-r4930-isnipe.patch), with build instructions and limits in [`docs/BUILD.md`](docs/BUILD.md). Replacing the DLL with a stock or different-revision build requires compatibility work and testing.
 
 ## Install
 
@@ -26,7 +40,7 @@ The panel uses unencrypted HTTP and is intended for a trusted LAN. Do not forwar
 ## Source and rebuilding
 
 - `install/mods/`: current server GSC, voting scripts, compiled mod fastfiles and UI packages. Each game mode has its own folder and leaderboard data at runtime.
-- `source/iw4x-r4930-isnipe.patch`: changes to the IW4x r4930 client/dedicated source, including sprint/perk handling, custom radar, killfeed, leaderboard, announcements and panel commands. `docs/BUILD.md` has build steps.
+- `source/iw4x-r4930-isnipe.patch`: changes to the IW4x r4930 client/dedicated source, including sprint/perk handling, killfeed support, announcements, panel commands and a legacy radar ping. `docs/BUILD.md` has build steps.
 - `source/asset-build/`: weapon/preview definitions and zone manifest used for the current fastfile; `source/menus/` contains menu source. Building fastfiles requires the applicable IW4x tools and game assets. See `docs/BUILD.md` for limitations.
 - `source/mapvote/`: source and resources from the imported map-vote package.
 
