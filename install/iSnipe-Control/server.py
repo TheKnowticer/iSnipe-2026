@@ -179,14 +179,14 @@ def start_server(key: str) -> str:
         if info:
             raise ValueError("The port is already answering; start was cancelled")
         server = SERVERS[key]
-        args = [str(GAME / "iw4x.exe"), "-dedicated", "+set", "fs_game", "mods/" + server["mod"],
+        args = [str(GAME / "iw4x.exe"), "-dedicated", "-console", "+set", "fs_game", "mods/" + server["mod"],
                 "+set", "sv_lanonly", "0", "+set", "dedicated", "2", "+set", "net_port", str(server["port"]),
                 "+exec", "isnipe-public.cfg", "+exec", "isnipe-dev.cfg"]
         if key != "sd":
             args += ["+exec", server["cfg"]]
         args += ["+set", "g_gametype", server["mode"], "+map", "mp_terminal"]
         subprocess.Popen(args, cwd=GAME, stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL,
-                         stderr=subprocess.DEVNULL, creationflags=CREATE_NO_WINDOW)
+                         stderr=subprocess.DEVNULL, creationflags=0)
         return "Start requested. The server may take several seconds to become ready."
 
 
